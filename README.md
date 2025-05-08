@@ -1,6 +1,6 @@
 # 🏦 Bank Statement Converter - SaaS Tool
 
-A **fully working SaaS tool** to convert bank statement PDFs into Excel or CSV format — built in **Flask + Python**, matching the functionality of [https://bankstatementconverter.com ](https://bankstatementconverter.com ).
+A **fully working SaaS tool** to convert bank statement PDFs into Excel or CSV format — built in **Flask + Python**, matching the functionality of [].
 
 ## 🔍 Features
 
