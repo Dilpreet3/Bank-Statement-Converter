@@ -1,7 +1,7 @@
 Flask==2.3.2
 Flask-Login==0.6.3
 Flask-SQLAlchemy==3.1.1
-stripe==4.20.0
+stripe>=8.0.0
 sendgrid==6.9.7
 python-dotenv==1.0.1
 pdfplumber==0.5.34
@@ -11,3 +11,4 @@ Pillow==9.5.0
 pytesseract==0.3.10
 opencv-python==4.8.0.76
 layoutparser[opencv]==0.10.1
+gunicorn==21.2.0
