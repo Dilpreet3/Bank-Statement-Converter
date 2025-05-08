@@ -1,0 +1,282 @@
+:root {
+  --trans: 100ms;
+  --bg: #fff;
+  --borderColor: #e7e7e7;
+  --borderActiveColor: #bababa;
+  --midWeight: 500;
+  --boldWeight: 600;
+  --textColor: #808191;
+  --primaryTextColor: #1b1d21;
+  --secondaryTextColor: #3c3f45;
+  --tertiaryTextColor: #969696;
+  --linkTextColor: #2554ae;
+  --scrollTrackColor: #fff;
+  --scrollThumbColor: #b4b4b4;
+  --controlFocusColor: #6281ff;
+  --primaryControlBg: #4b66d0;
+  --primaryControlActiveBg: #5775eb;
+  --primaryControlTextColor: #fff;
+  --secondaryControlBorderColor: #4f535c;
+  --secondaryControlTextColor: #61646c;
+  --secondaryControlActiveTextColor: #4b66d0;
+  --successControlBgColor: #18c09e;
+  --successControlActiveBgColor: #1ad0ac;
+  --successControlTextColor: #fff;
+  --dangerControlBg: #ffb9b8;
+  --dangerControlActiveBg: #ffa8a7;
+  --dangerControlTextColor: #b95150;
+  --smallRadius: 5px;
+  --radius: 8px;
+  --largeRadius: 12px;
+  --contentMaxWidth: 1000px;
+  --inputBg: #fafafa;
+  --codeBg: #273451;
+  --codeText: #fff;
+  --darkBg: #2c2c2c;
+  --darkText: #fff;
+  --lineBlue: #434dff;
+  --lineGreen: #33e833;
+  --linePink: #ff28ce;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  color: var(--secondaryTextColor);
+  background: var(--bg);
+}
+
+@media (max-width: 939px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+#__next,
+body,
+html {
+  height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong {
+  color: var(--primaryTextColor);
+}
+
+h1,
+h2 {
+  font-weight: var(--boldWeight);
+}
+
+a {
+  color: var(--linkTextColor);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.filepond--credits {
+  display: none;
+}
+
+.bsc-scroll {
+  overflow: auto;
+  max-width: 100%;
+  max-height: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollThumbColor) var(--scrollTrackColor);
+}
+
+.bsc-scroll::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.bsc-scroll::-webkit-scrollbar-corner,
+.bsc-scroll::-webkit-scrollbar-track {
+  background: var(--scrollTrackColor);
+}
+
+.bsc-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--scrollThumbColor);
+  border-radius: 20px;
+  border: 3px solid var(--scrollTrackColor);
+}
+
+/* Hero Section */
+.hero {
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #fff;
+  border-radius: var(--radius);
+}
+
+/* Upload Area */
+.upload-box {
+  border: 2px dashed var(--borderColor);
+  padding: 40px;
+  border-radius: var(--radius);
+  background-color: #fff;
+  transition: 0.3s;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.upload-box.hover {
+  border-color: var(--primaryControlBg);
+  background-color: #e6f0ff;
+}
+
+.upload-box p {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: var(--textColor);
+}
+
+/* Loader */
+.loader {
+  display: none;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primaryControlBg);
+  border-color: var(--primaryControlBg);
+}
+
+.btn-primary:hover {
+  background-color: var(--primaryControlActiveBg);
+  border-color: var(--primaryControlActiveBg);
+}
+
+.btn-success {
+  background-color: var(--successControlBgColor);
+  border-color: var(--successControlBgColor);
+}
+
+.btn-success:hover {
+  background-color: var(--successControlActiveBgColor);
+  border-color: var(--successControlActiveBgColor);
+}
+
+.btn-danger {
+  background-color: var(--dangerControlBg);
+  border-color: var(--dangerControlBg);
+  color: var(--dangerControlTextColor);
+}
+
+.btn-danger:hover {
+  background-color: var(--dangerControlActiveBg);
+  border-color: var(--dangerControlActiveBg);
+  color: var(--dangerControlTextColor);
+}
+
+/* Pricing Cards */
+.card {
+  border: 1px solid var(--borderColor);
+  border-radius: var(--radius);
+  transition: box-shadow 0.2s;
+}
+
+.card-header {
+  background-color: var(--primaryControlBg);
+  color: white;
+  border-bottom: 1px solid var(--primaryControlBg);
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+.card-title {
+  font-weight: var(--boldWeight);
+  margin-bottom: 0.5em;
+}
+
+.card-text {
+  margin-bottom: 1em;
+}
+
+/* Footer */
+footer {
+  padding: 1em 2em;
+  border-top: 1px solid var(--borderColor);
+}
+
+/* Responsive Container */
+.container {
+  max-width: var(--contentMaxWidth);
+  margin: auto;
+}
+
+/* Custom Button Class */
+.bsc-btn {
+  border-radius: var(--radius);
+  padding: 0.75em 1.25em;
+  font-size: 0.875em;
+  color: white;
+  background-color: var(--primaryControlBg);
+  border: none;
+  cursor: pointer;
+  transition: all var(--trans);
+}
+
+.bsc-btn:hover {
+  background-color: var(--primaryControlActiveBg);
+}
+
+/* Scrollable Table or Preview */
+.scroll-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--borderColor);
+  border-radius: var(--radius);
+  padding: 1em;
+  margin: 2em 0;
+}
+
+/* Success/Error Messages */
+.alert-success {
+  background-color: var(--successControlBgColor);
+  color: var(--successControlTextColor);
+  border: none;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.alert-error,
+.alert-danger {
+  background-color: var(--dangerControlBg);
+  color: var(--dangerControlTextColor);
+  border: none;
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+  .card-deck .card {
+    margin-bottom: 1em;
+  }
+}
