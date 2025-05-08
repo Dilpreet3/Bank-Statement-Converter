@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Inspect Mode - Manual Extraction{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Manual Data Extraction</h2>
+  <p>You can manually select regions of your PDF to extract data.</p>
+
+  <div id='alert-container'>
+    <div id='message'></div>
+  </div>
+
+  <a href="/" class="btn btn-secondary me-2">Back to Upload</a>
+  <a href="/inspect-help" target="_blank" class="btn btn-outline-primary">Help</a>
+  <a href="https://www.youtube.com/watch?v=j20uAJHd2qU " target="_blank" class="btn btn-outline-primary">Demo Video</a>
+
+  <div class="mt-4 mb-3">
+    <button id="create-table" class="btn btn-primary me-2">[1] Create Table</button>
+    <button id="add-column" class="btn btn-primary me-2">[2] Add Column</button>
+    <button id="add-row" class="btn btn-primary me-2">[3] Add Row</button>
+    <button id="zoom-in" class="btn btn-outline-primary me-2">[+] Zoom In</button>
+    <button id="zoom-out" class="btn btn-outline-primary me-2">[-] Zoom Out</button>
+    <button id="previous-page" class="btn btn-outline-secondary me-2">[<] Previous Page</button>
+    <button id="next-page" class="btn btn-outline-secondary">[>] Next Page</button>
+  </div>
+
+  <div class="mb-3">
+    <button id="extract-grids" class="btn btn-success me-2">[E] Extract Grids</button>
+    <button id="break-up-text" class="btn btn-warning">[B] Break Up Text</button>
+  </div>
+
+  <div class="form-check mb-3">
+    <input name="force-ocr" id="force-ocr" type="checkbox" class="form-check-input" />
+    <label for="force-ocr" class="form-check-label">Force OCR</label>
+  </div>
+
+  <p id="loading-container">Loading document...</p>
+  <p id="error-container" class="text-danger d-none">Error loading document</p>
+
+  <div class="pdf-viewer">
+    <canvas></canvas>
+    <div id="results-container" class="mt-4"></div>
+  </div>
+</div>
+
+<script type="module" src="https://cdn.jsdelivr.net/npm/pdfjs-dist @4.5.136/legacy/build/pdf.mjs"></script>
+<script type="module" src="{{ url_for('static', filename='js/inspect.js') }}"></script>
+{% endblock %}
