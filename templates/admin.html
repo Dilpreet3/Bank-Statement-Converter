@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel - Bank Statement Converter{% endblock %}
+{% block content %}
+<h2 class="mb-4">Admin Dashboard</h2>
+
+<!-- Users Section -->
+<div class="mb-5">
+  <h3>Users</h3>
+  <table class="table table-bordered table-hover mt-3">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Free Credits</th>
+        <th>Paid Credits</th>
+        <th>Unlimited</th>
+        <th>Subscriptions</th>
+        <th>Registered At</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>
+          {{ user.role }}
+          <form method="POST" action="{{ url_for('update_user_role', user_id=user.id) }}" class="d-inline ms-2">
+            <select name="role" onchange="this.form.submit()" class="form-select form-select-sm d-inline-block w-auto">
+              <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+              <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+            </select>
+          </form>
+        </td>
+        <td>{{ user.free_credits }}</td>
+        <td>{{ user.paid_credits }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('toggle_unlimited_credits', user_id=user.id) }}">
+            <input type="checkbox" name="unlimited_credits" {% if user.unlimited_credits %}checked{% endif %} onchange="this.form.submit()">
+          </form>
+        </td>
+        <td>{{ user.subscription_count }}</td>
+        <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Conversions Section -->
+<div class="mb-5">
+  <h3>All Conversions</h3>
+  <table class="table table-striped table-hover mt-3">
+    <thead class="table-light">
+      <tr>
+        <th>Conversion ID</th>
+        <th>User ID</th>
+        <th>File</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Download</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for conv in conversions %}
+      <tr>
+        <td>{{ conv.id }}</td>
+        <td>{{ conv.user_id or 'Anonymous' }}</td>
+        <td>{{ conv.pdf_path }}</td>
+        <td>{{ conv.status }}</td>
+        <td>{{ conv.created_at.strftime('%Y-%m-%d') }}</td>
+        <td>
+          <a href="{{ url_for('download', filename=conv.excel_path) }}" class="btn btn-success btn-sm">Excel</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- System Info -->
+<div>
+  <h3>System Stats</h3>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Total Users: {{ total_users }}</li>
+    <li class="list-group-item">Total Conversions: {{ total_conversions }}</li>
+    <li class="list-group-item">Total Files Converted: {{ total_files }}</li>
+    <li class="list-group-item">Storage Used: {{ storage_used }} MB</li>
+  </ul>
+</div>
+{% endblock %}
