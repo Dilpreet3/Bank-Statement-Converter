@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Pricing - Bank Statement Converter{% endblock %}
+{% block content %}
+<h2 class="my-4">Pricing Plans</h2>
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Anonymous</h5>
+        <p class="card-text">Try out our service without signing up.</p>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">✔️ 1 page per day</li>
+          <li class="list-group-item">❌ No support</li>
+          <li class="list-group-item">❌ No file history</li>
+        </ul>
+        <h4 class="mt-3">Free</h4>
+        <a href="/" class="btn btn-outline-primary mt-3">Convert Now</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card h-100 border-primary">
+      <div class="card-header text-white bg-primary">Most Popular</div>
+      <div class="card-body">
+        <h5 class="card-title">Registered</h5>
+        <p class="card-text">Get more power with free registration.</p>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">✔️ 5 pages per day</li>
+          <li class="list-group-item">✔️ File history</li>
+          <li class="list-group-item">✔️ Basic support</li>
+        </ul>
+        <h4 class="mt-3">Free</h4>
+        <a href="{{ url_for('register') }}" class="btn btn-primary mt-3">Register</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Subscribe</h5>
+        <p class="card-text">Unlimited conversions for teams and businesses.</p>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">✔️ Unlimited pages</li>
+          <li class="list-group-item">✔️ Priority support</li>
+          <li class="list-group-item">✔️ API access</li>
+        </ul>
+        <h4 class="mt-3">$5/month</h4>
+        <a href="{{ url_for('stripe_checkout') }}" class="btn btn-success mt-3">Subscribe</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
