@@ -20,14 +20,6 @@ async function loadPage(pageNum = 1) {
   await page.render({ canvasContext: ctx, viewport }).promise;
 }
 
-document.getElementById('next-page').addEventListener('click', () => {
-  alert("Next Page functionality needs backend integration.");
-});
-
-document.getElementById('previous-page').addEventListener('click', () => {
-  alert("Previous Page functionality needs backend integration.");
-});
-
 document.getElementById('zoom-in').addEventListener('click', () => {
   alert("Zoom In functionality needs backend integration.");
 });
@@ -50,7 +42,6 @@ document.getElementById('add-row').addEventListener('click', () => {
 
 document.getElementById('extract-grids').addEventListener('click', () => {
   alert("Extracting grids...");
-  // Implement manual grid extraction here
 });
 
 loadPage();
