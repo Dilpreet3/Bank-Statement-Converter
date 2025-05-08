@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Bank Statement Converter{% endblock %}
+{% block content %}
+<h2>Your Conversions</h2>
+{% if conversions %}
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>File Name</th>
+      <th>Date</th>
+      <th>Download</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for conv in conversions %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ conv.pdf_path }}</td>
+      <td>{{ conv.created_at.strftime('%Y-%m-%d') }}</td>
+      <td><a href="{{ url_for('download', filename=conv.excel_path) }}" class="btn btn-sm btn-success">Download</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  {% else %}
+  <p>You haven't converted any files yet.</p>
+  {% endif %}
+</table>
+{% endblock %}
