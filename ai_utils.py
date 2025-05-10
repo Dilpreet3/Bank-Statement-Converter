@@ -5,9 +5,9 @@ import uuid
 import os
 import pandas as pd
 
-# Load pre-trained model and processor
-processor = DonutProcessor.from_pretrained("naver-clova-ai/donut-base-finetuned-docbank")
-model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ai/donut-base-finetuned-docbank")
+# Use public model instead of private one
+processor = DonutProcessor.from_pretrained("microsoft/donut-base")
+model = VisionEncoderDecoderModel.from_pretrained("microsoft/donut-base")
 
 def convert_pdf_with_donut(pdf_path):
     """
@@ -24,7 +24,6 @@ def convert_pdf_with_donut(pdf_path):
         pix = page.get_pixmap(dpi=200)
         img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
 
-        # Process image with Donut
         pixel_values = processor(img, return_tensors="pt").pixel_values
         task_prompt = "<s>"
         decoder_input_ids = processor.tokenizer(task_prompt, add_special_tokens=False, return_tensors="pt").input_ids
@@ -42,7 +41,6 @@ def convert_pdf_with_donut(pdf_path):
         sequence = processor.batch_decode(outputs.sequences)[0]
         table_data = processor.tokenizer.post_process(sequence)
 
-        # Add to final result
         if table_data:
             df = pd.DataFrame(table_data)
             all_tables.append(df)
@@ -53,4 +51,5 @@ def convert_pdf_with_donut(pdf_path):
     final_df = pd.concat(all_tables, ignore_index=True)
     output_filename = f"{uuid.uuid4()}.xlsx"
     final_df.to_excel(os.path.join("outputs", output_filename), index=False)
+
     return output_filename
