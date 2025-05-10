@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Inspect Mode - Manual Extraction{% endblock %}
+{% block title %}Manual Inspection Mode{% endblock %}
 {% block content %}
 <div class="container mt-4">
   <h2>Manual Data Extraction</h2>
@@ -31,7 +31,6 @@
   <div class="form-check mb-3">
     <input name="force-ocr" id="force-ocr" type="checkbox" class="form-check-input">
     <label for="force-ocr" class="form-check-label">Force OCR</label>
-    <p id="force-ocr-message" class="text-muted small"></p>
   </div>
 
   <p id="loading-container">Loading document...</p>
@@ -43,6 +42,5 @@
   </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/inspect.js') }}"></script>
 {% endblock %}
