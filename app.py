@@ -6,7 +6,6 @@ from models import User, Conversion
 from email_utils import send_email
 from stripe_utils import create_checkout_session
 from utils import convert_pdf_to_excel
-from ai_utils import convert_pdf_with_donut
 
 app = Flask(__name__)
 app.config.from_object("config.Config")
@@ -15,6 +14,10 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @app.route('/')
 def home():
@@ -70,43 +73,28 @@ def convert():
 
         output_filename = convert_pdf_to_excel(path)
         if output_filename:
-            download_link = url_for("download", filename=output_filename)
+            conv = Conversion(
+                user_id=current_user.id if current_user.is_authenticated else None,
+                pdf_path=path,
+                excel_path=output_filename,
+                status="completed"
+            )
+            db.session.add(conv)
+            db.session.commit()
             if current_user.is_authenticated:
-                conversion = Conversion(
-                    user_id=current_user.id,
-                    pdf_path=path,
-                    excel_path=output_filename,
-                    status="completed"
-                )
-                db.session.add(conversion)
-                db.session.commit()
-                send_email(current_user.email, "Your Excel File is Ready", f"<p>Download your converted file: <a href='{request.host_url}{download_link}'>here</a></p>")
-            return jsonify({"status": "success", "download_link": download_link})
+                send_email(current_user.email, "Your Excel File is Ready", f"<p>Download your converted file: <a href='{request.host_url}/download/{output_filename}'>here</a></p>")
+            return jsonify({"status": "success", "download_link": url_for("download", filename=output_filename)})
         else:
             session['failed_file'] = filename
             return jsonify({"status": "manual", "inspect_url": url_for("inspect_file")})
     return jsonify({"status": "error"}), 400
 
-@app.route('/admin')
-@login_required
-def admin():
-    if current_user.role != "admin":
-        return "Access Denied", 403
-    users = User.query.all()
-    conversions = Conversion.query.all()
-    return render_template("admin.html", users=users, conversions=conversions)
-
-@app.route('/pricing')
-def pricing():
-    return render_template("pricing.html")
-
-@app.route('/contact')
-def contact():
-    return render_template("contact.html")
-
-@app.route('/success')
-def success():
-    return render_template("success.html")
+@app.route('/inspect')
+def inspect_file():
+    filename = session.get('failed_file', None)
+    if not filename:
+        return redirect(url_for('home'))
+    return render_template("inspect.html", filename=filename)
 
 @app.route('/download/<filename>')
 def download(filename):
@@ -117,10 +105,3 @@ def setup_db():
     with app.app_context():
         db.create_all()
     return "Database Created!"
-
-@app.route('/inspect')
-def inspect_file():
-    filename = session.get('failed_file', None)
-    if not filename:
-        return redirect(url_for('home'))
-    return render_template("inspect.html", filename=filename)
