@@ -3,10 +3,10 @@
 {% block content %}
 <div class="container mt-4">
   <h2>Manual Data Extraction</h2>
-  <p>You can manually select regions of your PDF to extract data.</p>
+  <p>You can manually select regions of your PDF to extract structured data.</p>
 
-  <div id='alert-container'>
-    <div id='message'></div>
+  <div id='alert-container' class="mb-3">
+    <div id='message' class="alert alert-info d-none"></div>
   </div>
 
   <a href="/" class="btn btn-secondary me-2">Back to Upload</a>
@@ -29,8 +29,9 @@
   </div>
 
   <div class="form-check mb-3">
-    <input name="force-ocr" id="force-ocr" type="checkbox" class="form-check-input" />
+    <input name="force-ocr" id="force-ocr" type="checkbox" class="form-check-input">
     <label for="force-ocr" class="form-check-label">Force OCR</label>
+    <p id="force-ocr-message" class="text-muted small"></p>
   </div>
 
   <p id="loading-container">Loading document...</p>
@@ -42,6 +43,6 @@
   </div>
 </div>
 
-<script type="module" src="https://cdn.jsdelivr.net/npm/pdfjs-dist @4.5.136/legacy/build/pdf.mjs"></script>
-<script type="module" src="{{ url_for('static', filename='js/inspect.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/inspect.js') }}"></script>
 {% endblock %}
