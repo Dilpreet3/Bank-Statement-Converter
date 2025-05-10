@@ -1,77 +1,54 @@
-from flask import jsonify
-from models import Conversion
-from utils import convert_pdf_to_excel
-from flask_login import current_user
+from transformers import DonutProcessor, VisionEncoderDecoderModel
+from PIL import Image
+import fitz  # PyMuPDF
+import uuid
+import os
+import pandas as pd
 
-def handle_upload(file, user=None):
-    filename = file.filename
-    path = os.path.join("uploads", filename)
-    file.save(path)
+# Use public model instead of private one
+processor = DonutProcessor.from_pretrained("microsoft/donut-base")
+model = VisionEncoderDecoderModel.from_pretrained("microsoft/donut-base")
 
-    output_filename = convert_pdf_to_excel(path)
+def convert_pdf_with_donut(pdf_path):
+    """
+    Converts bank statement using AI model
+    """
+    doc = fitz.open(pdf_path)
+    output_dir = "outputs"
+    os.makedirs(output_dir, exist_ok=True)
 
-    conversion = Conversion(
-        user_id=user.id if user else None,
-        pdf_path=path,
-        excel_path=output_filename,
-        status="READY" if output_filename else "PROCESSING"
-    )
-    db.session.add(conversion)
-    db.session.commit()
+    all_tables = []
 
-    return jsonify([{
-        "uuid": conversion.id,
-        "filename": filename,
-        "pdfType": "TEXT_BASED" if output_filename else "IMAGE_BASED",
-        "state": "READY" if output_filename else "PROCESSING"
-    }])
+    for page_num in range(len(doc)):
+        page = doc.load_page(page_num)
+        pix = page.get_pixmap(dpi=200)
+        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
 
-def get_upload_status(uuids):
-    results = []
-    for uuid in uuids:
-        conv = Conversion.query.get(uuid)
-        if conv:
-            results.append({
-                "uuid": conv.id,
-                "filename": conv.pdf_path,
-                "pdfType": "TEXT_BASED",
-                "state": "READY",
-                "numberOfPages": 1
-            })
-    return jsonify(results)
+        pixel_values = processor(img, return_tensors="pt").pixel_values
+        task_prompt = "<s>"
+        decoder_input_ids = processor.tokenizer(task_prompt, add_special_tokens=False, return_tensors="pt").input_ids
 
-def convert_statements(uuids):
-    results = []
-    for uuid in uuids:
-        conv = Conversion.query.get(uuid)
-        if conv and conv.excel_path:
-            df = pd.read_excel(os.path.join("outputs", conv.excel_path))
-            results.append({"normalised": df.to_dict(orient="records")})
-    return jsonify(results)
+        outputs = model.generate(
+            pixel_values,
+            decoder_input_ids=decoder_input_ids,
+            max_new_tokens=512,
+            early_stopping=True,
+            num_beams=1,
+            bad_words_ids=[[processor.tokenizer.unk_token_id]],
+            return_dict_in_generate=True,
+        )
 
-def set_password(passwords):
-    results = []
-    for item in passwords:
-        results.append({
-            "uuid": item['uuid'],
-            "filename": "locked.pdf",
-            "pdfType": "TEXT_BASED",
-            "state": "READY",
-            "numberOfPages": 3
-        })
-    return jsonify(results)
+        sequence = processor.batch_decode(outputs.sequences)[0]
+        table_data = processor.tokenizer.post_process(sequence)
 
-def get_user_info(user):
-    return jsonify({
-        "user": {
-            "userId": user.id,
-            "firstName": user.username,
-            "email": user.email,
-            "apiKey": user.id
-        },
-        "credits": {
-            "paidCredits": user.paid_credits,
-            "freeCredits": user.free_credits
-        },
-        "unlimitedCredits": user.unlimited_credits
-    })
+        if table_data:
+            df = pd.DataFrame(table_data)
+            all_tables.append(df)
+
+    if not all_tables:
+        return None
+
+    final_df = pd.concat(all_tables, ignore_index=True)
+    output_filename = f"{uuid.uuid4()}.xlsx"
+    final_df.to_excel(os.path.join("outputs", output_filename), index=False)
+    return output_filename
