@@ -1,11 +1,11 @@
 import pdfplumber
 import pandas as pd
-import pytesseract
-from PIL import Image
-import fitz
+import fitz  # PyMuPDF
 import uuid
 import os
-from ai_utils import convert_pdf_with_donut
+import pytesseract
+from PIL import Image
+import numpy as np
 
 def convert_pdf_to_excel(pdf_path):
     data = []
@@ -19,20 +19,14 @@ def convert_pdf_to_excel(pdf_path):
         df = pd.DataFrame(data[1:], columns=data[0]) if data else pd.DataFrame()
 
         if df.empty:
-            # Try AI-based conversion
-            output_filename = convert_pdf_with_donut(pdf_path)
-            if output_filename:
-                return output_filename
-            # If AI fails, fall back to OCR
             raw_text = extract_text_from_pdf(pdf_path)
             lines = raw_text.splitlines()
             filtered = [line.split() for line in lines if line.strip()]
             df = pd.DataFrame(filtered)
 
         output_filename = f"{uuid.uuid4()}.xlsx"
-        df.to_excel(os.path.join("outputs", output_filename), index=False)
+        df.to_excel(os.path.join("outputs", output_filename), index=False, engine='openpyxl')
         return output_filename
-
     except Exception as e:
         print("Conversion error:", e)
         return None
