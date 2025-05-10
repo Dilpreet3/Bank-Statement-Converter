@@ -1,15 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file, flash, session
-from flask_sqlalchemy import SQLAlchemy
+from models import db, User, Conversion
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import os
-from models import User, Conversion
 from email_utils import send_email
 from stripe_utils import create_checkout_session
 from utils import convert_pdf_to_excel
 
 app = Flask(__name__)
 app.config.from_object("config.Config")
+
+# Initialize SQLAlchemy directly with app
 db.init_app(app)
+
+with app.app_context():
+    db.create_all()  # Ensure tables are created
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -72,29 +76,17 @@ def convert():
         file.save(path)
 
         output_filename = convert_pdf_to_excel(path)
-        if output_filename:
-            conv = Conversion(
-                user_id=current_user.id if current_user.is_authenticated else None,
-                pdf_path=path,
-                excel_path=output_filename,
-                status="completed"
-            )
-            db.session.add(conv)
-            db.session.commit()
-            if current_user.is_authenticated:
-                send_email(current_user.email, "Your Excel File is Ready", f"<p>Download your converted file: <a href='{request.host_url}/download/{output_filename}'>here</a></p>")
-            return jsonify({"status": "success", "download_link": url_for("download", filename=output_filename)})
-        else:
-            session['failed_file'] = filename
-            return jsonify({"status": "manual", "inspect_url": url_for("inspect_file")})
-    return jsonify({"status": "error"}), 400
+        conversion = Conversion(
+            user_id=current_user.id if current_user.is_authenticated else None,
+            pdf_path=path,
+            excel_path=output_filename,
+            status="READY" if output_filename else "PROCESSING"
+        )
+        db.session.add(conversion)
+        db.session.commit()
 
-@app.route('/inspect')
-def inspect_file():
-    filename = session.get('failed_file', None)
-    if not filename:
-        return redirect(url_for('home'))
-    return render_template("inspect.html", filename=filename)
+        return jsonify({"status": "success", "download_link": f"/download/{output_filename}"})
+    return jsonify({"status": "error"}), 400
 
 @app.route('/download/<filename>')
 def download(filename):
@@ -102,6 +94,5 @@ def download(filename):
 
 @app.route('/setup-db')
 def setup_db():
-    with app.app_context():
-        db.create_all()
+    db.create_all()
     return "Database Created!"
